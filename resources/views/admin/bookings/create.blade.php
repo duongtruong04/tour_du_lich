@@ -9,19 +9,19 @@
         <!-- Thông tin khách hàng -->
         <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mb-6">
             <h3 class="font-bold text-gray-800 mb-4 flex items-center">
-                <i class="fas fa-user-circle mr-2 text-indigo-500"></i> Thông tin khách hàng
+                <i class="fas fa-user-circle mr-2 text-primary"></i> Thông tin khách hàng
             </h3>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
                     <input type="email" name="email" required placeholder="customer@example.com" 
-                        class="w-full border p-2 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                        class="w-full border p-2 rounded-lg focus:ring-2 focus:ring-primary focus:outline-none">
                     <p class="text-xs text-gray-400 mt-1 italic">Hệ thống sẽ tự động tạo tài khoản nếu email mới.</p>
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Họ và tên</label>
                     <input type="text" name="full_name" required placeholder="Nguyễn Văn A" 
-                        class="w-full border p-2 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                        class="w-full border p-2 rounded-lg focus:ring-2 focus:ring-primary focus:outline-none">
                 </div>
             </div>
         </div>
@@ -29,12 +29,12 @@
         <!-- Chọn Tour & Ngày khởi hành -->
         <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mb-6">
             <h3 class="font-bold text-gray-800 mb-4 flex items-center">
-                <i class="fas fa-map mr-2 text-indigo-500"></i> Chọn Tour & Ngày khởi hành
+                <i class="fas fa-map mr-2 text-primary"></i> Chọn Tour & Ngày khởi hành
             </h3>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Chọn Tour</label>
-                    <select id="tour_select" class="w-full border p-2 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none" onchange="updateDepartures()">
+                    <select id="tour_select" class="w-full border p-2 rounded-lg focus:ring-2 focus:ring-primary focus:outline-none" onchange="updateDepartures()">
                         <option value="">-- Chọn Tour --</option>
                         @foreach($tours as $tour)
                         <option value="{{ $tour->id }}" data-departures='{{ json_encode($tour->departures) }}'>{{ $tour->title }}</option>
@@ -43,18 +43,48 @@
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Ngày khởi hành</label>
-                    <select name="departure_id" id="departure_select" required class="w-full border p-2 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                    <select name="departure_id" id="departure_select" required class="w-full border p-2 rounded-lg focus:ring-2 focus:ring-primary focus:outline-none">
                         <option value="">-- Chọn ngày khởi hành --</option>
                     </select>
                 </div>
             </div>
         </div>
 
+        <!-- Trạng thái & Thanh toán -->
+        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mb-6">
+            <h3 class="font-bold text-gray-800 mb-4 flex items-center">
+                <i class="fas fa-info-circle mr-2 text-primary"></i> Trạng thái & Thanh toán
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Trạng thái Đơn hàng</label>
+                    <select name="status" class="w-full border p-2 rounded-lg focus:ring-2 focus:ring-primary focus:outline-none">
+                        <option value="Pending">Chờ duyệt (Pending)</option>
+                        <option value="Confirmed" selected>Đã xác nhận (Confirmed)</option>
+                        <option value="Completed">Đã hoàn thành (Completed)</option>
+                        <option value="Cancelled">Đã hủy (Cancelled)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Trạng thái Thanh toán</label>
+                    <select name="payment_status" class="w-full border p-2 rounded-lg focus:ring-2 focus:ring-primary focus:outline-none">
+                        <option value="Unpaid">Chưa thanh toán (Unpaid)</option>
+                        <option value="Paid" selected>Đã thanh toán (Paid)</option>
+                    </select>
+                </div>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Ghi chú</label>
+                <textarea name="notes" rows="2" placeholder="Ghi chú thêm thông tin (Ví dụ: Đặt tại quầy tiền mặt...)" 
+                    class="w-full border p-2 rounded-lg focus:ring-2 focus:ring-primary focus:outline-none"></textarea>
+            </div>
+        </div>
+
         <!-- Danh sách hành khách -->
         <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mb-6">
             <h3 class="font-bold text-gray-800 mb-4 flex items-center justify-between">
-                <span><i class="fas fa-users mr-2 text-indigo-500"></i> Danh sách hành khách</span>
-                <button type="button" onclick="addPassengerRow()" class="text-xs bg-indigo-50 text-indigo-600 px-3 py-1 rounded-full hover:bg-indigo-100 transition">
+                <span><i class="fas fa-users mr-2 text-primary"></i> Danh sách hành khách</span>
+                <button type="button" onclick="addPassengerRow()" class="text-xs bg-emerald-50 text-emerald-600 px-3 py-1 rounded-full hover:bg-emerald-100 transition">
                     + Thêm hành khách
                 </button>
             </h3>
@@ -72,7 +102,7 @@
 
         <div class="flex justify-end space-x-3">
             <a href="{{ route('admin.bookings.index') }}" class="px-6 py-2 border rounded-lg hover:bg-gray-100 transition">Hủy</a>
-            <button type="submit" class="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-bold transition shadow-md shadow-indigo-200">
+            <button type="submit" class="px-6 py-2 bg-primary hover:bg-primary/90 text-white rounded-lg font-bold transition shadow-md shadow-primary/20">
                 Xác nhận Đặt Tour
             </button>
         </div>

@@ -43,8 +43,8 @@ class LoginController extends Controller
                 ]);
             }
 
-            // Admin redirect
-            if ($user->role_id == 1) {
+            // Admin or Staff redirect
+            if ($user->role_id == 1 || $user->role_id == 3) {
                 return redirect()->intended(route('admin.dashboard'));
             }
 

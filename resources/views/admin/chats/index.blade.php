@@ -52,6 +52,7 @@
 
                 <!-- Actions -->
                 <div class="md:w-12 flex items-start justify-end">
+                    @if(Auth::user()->role_id == 1)
                     <form action="{{ route('admin.chats.destroy', $chat) }}" method="POST" onsubmit="return confirm('Xóa lịch sử chat này?')" class="inline">
                         @csrf
                         @method('DELETE')
@@ -59,6 +60,7 @@
                             <i class="fas fa-trash-alt text-[10px]"></i>
                         </button>
                     </form>
+                    @endif
                 </div>
             </div>
         </div>

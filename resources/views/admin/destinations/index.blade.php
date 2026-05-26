@@ -65,6 +65,7 @@
                             <a href="{{ route('admin.destinations.edit', $destination) }}" class="p-2 text-teal-600 hover:bg-teal-50 rounded-lg transition-colors" title="Chỉnh sửa">
                                 <i class="fas fa-edit"></i>
                             </a>
+                            @if(Auth::user()->role_id == 1)
                             <form action="{{ route('admin.destinations.destroy', $destination) }}" method="POST" onsubmit="return confirm('Xác nhận xóa điểm đến này?')" class="inline">
                                 @csrf
                                 @method('DELETE')
@@ -72,6 +73,7 @@
                                     <i class="fas fa-trash"></i>
                                 </button>
                             </form>
+                            @endif
                         </div>
                     </td>
                 </tr>

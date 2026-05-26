@@ -83,27 +83,40 @@ Route::get('admin/login', [LoginController::class, 'showLoginForm'])->name('admi
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
     
-    Route::resource('tours', TourController::class);
+    // Standard resources for Admin & Staff (but exclude destroy)
+    Route::resource('tours', TourController::class)->except(['destroy']);
     Route::delete('tours/images/{image}', [TourController::class, 'deleteImage'])->name('tours.delete_image');
-    Route::resource('bookings', BookingController::class);
-    Route::resource('destinations', DestinationController::class);
-    Route::resource('news', NewsController::class);
-    Route::resource('news_categories', NewsCategoryController::class);
-    Route::resource('promotions', PromotionController::class);
-    Route::resource('reviews', ReviewController::class)->only(['index', 'destroy']);
+    Route::get('bookings/{booking}/print', [BookingController::class, 'printInvoice'])->name('bookings.print');
+    Route::resource('bookings', BookingController::class)->except(['destroy']);
+    Route::resource('destinations', DestinationController::class)->except(['destroy']);
+    Route::resource('news', NewsController::class)->except(['destroy']);
+    Route::resource('news_categories', NewsCategoryController::class)->except(['destroy']);
+    Route::resource('promotions', PromotionController::class)->except(['destroy']);
+    Route::resource('reviews', ReviewController::class)->only(['index']);
     
-    // User & Role Management
-    Route::resource('users', \App\Http\Controllers\Admin\UserController::class);
-    
-    // Payments & Chats
+    // Payments & Chats (accessible by both Admin and Staff)
     Route::get('payments', [\App\Http\Controllers\Admin\PaymentController::class, 'index'])->name('payments.index');
     Route::get('payments/{payment}', [\App\Http\Controllers\Admin\PaymentController::class, 'show'])->name('payments.show');
     Route::get('chats', [\App\Http\Controllers\Admin\ChatController::class, 'index'])->name('chats.index');
-    Route::delete('chats/{chat}', [\App\Http\Controllers\Admin\ChatController::class, 'destroy'])->name('chats.destroy');
 
-    // Global Settings
-    Route::get('settings', [SettingController::class, 'index'])->name('settings.index');
-    Route::post('settings', [SettingController::class, 'update'])->name('settings.update');
+    // Admin only delete & configuration actions
+    Route::middleware('superadmin')->group(function () {
+        Route::delete('tours/{tour}', [TourController::class, 'destroy'])->name('tours.destroy');
+        Route::delete('bookings/{booking}', [BookingController::class, 'destroy'])->name('bookings.destroy');
+        Route::delete('destinations/{destination}', [DestinationController::class, 'destroy'])->name('destinations.destroy');
+        Route::delete('news/{news}', [NewsController::class, 'destroy'])->name('news.destroy');
+        Route::delete('news_categories/{news_category}', [NewsCategoryController::class, 'destroy'])->name('news_categories.destroy');
+        Route::delete('promotions/{promotion}', [PromotionController::class, 'destroy'])->name('promotions.destroy');
+        Route::delete('reviews/{review}', [ReviewController::class, 'destroy'])->name('reviews.destroy');
+        Route::delete('chats/{chat}', [\App\Http\Controllers\Admin\ChatController::class, 'destroy'])->name('chats.destroy');
+        
+        // User & Role Management
+        Route::resource('users', \App\Http\Controllers\Admin\UserController::class);
+        
+        // Global Settings
+        Route::get('settings', [SettingController::class, 'index'])->name('settings.index');
+        Route::post('settings', [SettingController::class, 'update'])->name('settings.update');
+    });
 
     // Admin Profile
     Route::get('profile', [\App\Http\Controllers\Admin\ProfileController::class, 'index'])->name('profile.index');

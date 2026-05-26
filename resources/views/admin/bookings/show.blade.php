@@ -2,21 +2,26 @@
 
 @section('title', 'Chi tiết Đơn hàng')
 
-@section('actions')
-<div class="flex space-x-2 no-print">
-    <button onclick="window.print()" class="bg-gray-800 hover:bg-black text-white px-4 py-2 rounded-lg font-medium transition flex items-center shadow-sm">
-        <i class="fas fa-print mr-2"></i> In hóa đơn
-    </button>
-    <a href="{{ route('admin.bookings.edit', $booking->id) }}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition flex items-center shadow-sm">
-        <i class="fas fa-edit mr-2"></i> Cập nhật
-    </a>
-    <a href="{{ route('admin.bookings.index') }}" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg font-medium transition">
-        Quay lại
-    </a>
-</div>
-@endsection
-
 @section('content')
+{{-- Header Button Bar --}}
+<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 no-print mb-6">
+    <div>
+        <h1 class="text-2xl font-black text-slate-800 tracking-tight">Chi tiết <span class="text-indigo-600">Đơn hàng</span></h1>
+        <p class="text-slate-400 text-[10px] font-bold uppercase tracking-widest mt-1">Quản lý và in hóa đơn thanh toán</p>
+    </div>
+    <div class="flex items-center gap-3">
+        <a href="{{ route('admin.bookings.print', $booking->id) }}" target="_blank" class="px-5 py-2.5 bg-slate-800 hover:bg-black text-white rounded-xl font-black text-xs uppercase tracking-widest transition-all text-center flex items-center gap-1.5 shadow-md">
+            <i class="fas fa-print text-xs"></i> In hóa đơn
+        </a>
+        <a href="{{ route('admin.bookings.edit', $booking->id) }}" class="px-5 py-2.5 bg-primary text-white rounded-xl font-black text-xs uppercase tracking-widest hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 text-center flex items-center gap-1.5">
+            <i class="fas fa-edit text-xs"></i> Cập nhật
+        </a>
+        <a href="{{ route('admin.bookings.index') }}" class="px-5 py-2.5 bg-slate-200 text-slate-500 rounded-xl font-black text-xs uppercase tracking-widest hover:bg-slate-300 transition-all text-center">
+            Quay lại
+        </a>
+    </div>
+</div>
+
 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
     <div class="md:col-span-2 space-y-6">
         <!-- Main Booking Info -->
@@ -130,16 +135,4 @@
         </div>
     </div>
 </div>
-
-<style>
-    @media print {
-        .sidebar, .topbar, .no-print, header, footer { display: none !important; }
-        .main-content { margin-left: 0 !important; padding: 0 !important; }
-        body { background: white !important; }
-        .shadow-sm, .shadow-lg { box-shadow: none !important; border: 1px solid #eee !important; }
-        .md\:col-span-2 { width: 100% !important; grid-column: span 3 / span 3 !important; }
-        .grid { display: block !important; }
-        .rounded-xl { border-radius: 0 !important; }
-    }
-</style>
 @endsection

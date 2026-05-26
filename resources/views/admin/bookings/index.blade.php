@@ -2,17 +2,6 @@
 
 @section('title', 'Quản lý Đơn hàng')
 
-@section('actions')
-<div class="flex space-x-2">
-    <a href="{{ request()->fullUrlWithQuery(['export' => 'pdf']) }}" target="_blank" class="bg-gray-800 hover:bg-black text-white px-4 py-2 rounded-lg font-medium transition flex items-center shadow-sm">
-        <i class="fas fa-file-pdf mr-2"></i> Xuất PDF
-    </a>
-    <a href="{{ route('admin.bookings.create') }}" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition flex items-center shadow-sm">
-        <i class="fas fa-plus mr-2"></i> Đặt tại quầy
-    </a>
-</div>
-@endsection
-
 @section('content')
 <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mb-6">
     <div class="p-4 bg-gray-50 border-b border-gray-100">
@@ -38,10 +27,20 @@
                 </select>
             </div>
             <div class="flex space-x-2">
-                <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition flex-1 text-sm font-bold">Lọc</button>
+                <button type="submit" class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/90 transition flex-1 text-sm font-bold">Lọc</button>
                 <a href="{{ route('admin.bookings.index') }}" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition text-center" title="Bỏ lọc"><i class="fas fa-sync-alt"></i></a>
             </div>
         </form>
+
+        {{-- Row 2: Actions --}}
+        <div class="flex flex-wrap items-center gap-3 mt-4 border-t pt-4 border-slate-100">
+            <a href="{{ request()->fullUrlWithQuery(['export' => 'excel']) }}" class="px-5 py-2.5 bg-slate-100 text-slate-600 rounded-xl font-black text-xs uppercase tracking-widest hover:bg-slate-200 transition-all text-center flex items-center gap-1.5 shadow-sm">
+                <i class="fas fa-file-excel text-emerald-600 text-sm"></i> Xuất Excel
+            </a>
+            <a href="{{ route('admin.bookings.create') }}" class="px-5 py-2.5 bg-primary text-white rounded-xl font-black text-xs uppercase tracking-widest hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 text-center flex items-center gap-1.5">
+                <i class="fas fa-plus text-xs"></i> Đặt tại quầy
+            </a>
+        </div>
     </div>
     
     <div class="overflow-x-auto">
@@ -92,10 +91,12 @@
                     <td class="px-6 py-4 text-right space-x-2">
                         <a href="{{ route('admin.bookings.show', $booking->id) }}" class="text-indigo-600 hover:text-indigo-800" title="Chi tiết"><i class="fas fa-eye text-lg"></i></a>
                         <a href="{{ route('admin.bookings.edit', $booking->id) }}" class="text-blue-600 hover:text-blue-800" title="Sửa"><i class="fas fa-edit text-lg"></i></a>
+                        @if(Auth::user()->role_id == 1)
                         <form action="{{ route('admin.bookings.destroy', $booking->id) }}" method="POST" class="inline">
                             @csrf @method('DELETE')
                             <button type="submit" class="text-red-500 hover:text-red-700" onclick="return confirm('Xóa đơn hàng này?')" title="Xóa"><i class="fas fa-trash text-lg"></i></button>
                         </form>
+                        @endif
                     </td>
                 </tr>
                 @empty

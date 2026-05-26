@@ -40,13 +40,29 @@ class BookingController extends Controller
             return view('admin.bookings.print', compact('bookings'));
         }
 
+        if ($request->export == 'excel') {
+            $bookings = $query->get();
+            return view('admin.bookings.excel', compact('bookings'));
+        }
+
         return view('admin.bookings.index', compact('bookings'));
     }
 
-    public function show(Booking $booking)
+    public function show(Booking $booking, Request $request)
     {
         $booking->load(['user', 'departure.tour', 'passengers', 'payments']);
+
+        if ($request->export == 'excel') {
+            return view('admin.bookings.show_excel', compact('booking'));
+        }
+
         return view('admin.bookings.show', compact('booking'));
+    }
+
+    public function printInvoice(Booking $booking)
+    {
+        $booking->load(['user', 'departure.tour', 'passengers', 'payments']);
+        return view('admin.bookings.print_invoice', compact('booking'));
     }
 
     public function create()
@@ -63,6 +79,9 @@ class BookingController extends Controller
             'departure_id' => 'required',
             'passengers' => 'required|array|min:1',
             'passengers.*.name' => 'required',
+            'status' => 'nullable|in:Pending,Confirmed,Completed,Cancelled',
+            'payment_status' => 'nullable|in:Unpaid,Paid',
+            'notes' => 'nullable|string',
         ]);
 
         $user = User::where('email', $request->email)->first();
@@ -84,9 +103,9 @@ class BookingController extends Controller
             'user_id' => $user->id,
             'departure_id' => $departure->id,
             'total_price' => $totalPrice,
-            'status' => 'Confirmed',
-            'payment_status' => 'Paid',
-            'notes' => 'Đặt tại quầy (Tiền mặt)',
+            'status' => $request->status ?? 'Confirmed',
+            'payment_status' => $request->payment_status ?? 'Paid',
+            'notes' => $request->notes ?? 'Đặt tại quầy (Tiền mặt)',
         ]);
 
         foreach ($request->passengers as $passengerData) {

@@ -90,10 +90,12 @@
                     <span x-show="sidebarOpen">Thanh toán</span>
                 </a>
 
+                @if(Auth::user()->role_id == 1)
                 <a href="{{ route('admin.users.index') }}" class="sidebar-link flex items-center gap-3 p-3 rounded-xl transition-all font-bold text-xs uppercase tracking-widest {{ request()->routeIs('admin.users.*') ? 'sidebar-active' : 'text-slate-500' }}">
                     <i class="fas fa-users w-5 text-center text-sm"></i>
                     <span x-show="sidebarOpen">Người dùng</span>
                 </a>
+                @endif
 
                 <a href="{{ route('admin.promotions.index') }}" class="sidebar-link flex items-center gap-3 p-3 rounded-xl transition-all font-bold text-xs uppercase tracking-widest {{ request()->routeIs('admin.promotions.*') ? 'sidebar-active' : 'text-slate-500' }}">
                     <i class="fas fa-percentage w-5 text-center text-sm"></i>
@@ -119,10 +121,12 @@
 
                 <div class="pt-6 pb-2 px-3 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]" x-show="sidebarOpen">Hệ thống</div>
 
+                @if(Auth::user()->role_id == 1)
                 <a href="{{ route('admin.settings.index') }}" class="sidebar-link flex items-center gap-3 p-3 rounded-xl transition-all font-bold text-xs uppercase tracking-widest {{ request()->routeIs('admin.settings.*') ? 'sidebar-active' : 'text-slate-500' }}">
                     <i class="fas fa-cog w-5 text-center text-sm"></i>
                     <span x-show="sidebarOpen">Cấu hình</span>
                 </a>
+                @endif
 
                 <a href="{{ route('admin.profile.index') }}" class="sidebar-link flex items-center gap-3 p-3 rounded-xl transition-all font-bold text-xs uppercase tracking-widest {{ request()->routeIs('admin.profile.*') ? 'sidebar-active' : 'text-slate-500' }}">
                     <i class="fas fa-user-shield w-5 text-center text-sm"></i>
@@ -158,6 +162,12 @@
                 </div>
 
                 <div class="flex items-center gap-6">
+                    @if(view()->hasSection('actions'))
+                        <div class="flex items-center gap-2">
+                            @yield('actions')
+                        </div>
+                    @endif
+
                     <!-- Notifications -->
                     <div class="relative group">
                         <button class="w-10 h-10 flex items-center justify-center rounded-xl bg-slate-50 text-slate-400 hover:text-primary transition-all">
@@ -171,7 +181,15 @@
                         <button @click="openProfile = !openProfile" class="flex items-center gap-3 pl-6 border-l border-slate-200 text-left focus:outline-none group">
                             <div class="text-right hidden sm:block">
                                 <p class="text-xs font-black text-slate-800 tracking-tight leading-none mb-1 group-hover:text-primary transition-colors">{{ Auth::user()->full_name }}</p>
-                                <p class="text-[9px] font-black text-primary uppercase tracking-widest leading-none">Administrator</p>
+                                <p class="text-[9px] font-black text-primary uppercase tracking-widest leading-none">
+                                    @if(Auth::user()->role_id == 1)
+                                        Administrator
+                                    @elseif(Auth::user()->role_id == 3)
+                                        Nhân viên
+                                    @else
+                                        Khách hàng
+                                    @endif
+                                </p>
                             </div>
                             <img src="{{ Auth::user()->avatar_url }}" 
                                  class="w-10 h-10 rounded-xl object-cover shadow-lg shadow-teal-500/10 border-2 border-teal-50 group-hover:border-primary transition-colors">

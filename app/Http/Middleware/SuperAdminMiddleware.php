@@ -6,7 +6,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-class AdminMiddleware
+class SuperAdminMiddleware
 {
     /**
      * Handle an incoming request.
@@ -17,10 +17,14 @@ class AdminMiddleware
      */
     public function handle(Request $request, Closure $next)
     {
-        if (Auth::check() && (Auth::user()->role_id == 1 || Auth::user()->role_id == 3)) { // 1 is Admin, 3 is Staff/Employee
+        if (Auth::check() && Auth::user()->role_id == 1) { // 1 is Admin
             return $next($request);
         }
 
-        return redirect('/')->with('error', 'Bạn không có quyền truy cập trang này.');
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json(['error' => 'Bạn không có quyền thực hiện chức năng này.'], 403);
+        }
+
+        return redirect()->route('admin.dashboard')->with('error', 'Chỉ quản trị viên mới có quyền thực hiện chức năng này.');
     }
 }

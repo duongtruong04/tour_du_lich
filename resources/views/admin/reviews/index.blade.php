@@ -57,12 +57,14 @@
                         {{ $review->created_at->format('d/m/Y H:i') }}
                     </td>
                     <td class="px-6 py-4 text-right">
+                        @if(Auth::user()->role_id == 1)
                         <form action="{{ route('admin.reviews.destroy', $review->id) }}" method="POST" class="inline">
                             @csrf @method('DELETE')
                             <button type="submit" class="text-red-500 hover:text-red-700 bg-red-50 w-8 h-8 rounded-full flex items-center justify-center transition" onclick="return confirm('Xóa đánh giá này?')" title="Xóa">
                                 <i class="fas fa-trash-alt"></i>
                             </button>
                         </form>
+                        @endif
                     </td>
                 </tr>
                 @empty

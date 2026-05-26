@@ -56,6 +56,16 @@ class User extends Authenticatable
         return $this->role_id === 1; // 'Admin' role_id in SQL is 1
     }
 
+    public function isEmployee()
+    {
+        return $this->role_id === 3; // 'Employee' role_id in SQL is 3
+    }
+
+    public function isStaff()
+    {
+        return $this->role_id === 3; // 'Employee/Staff' role_id in SQL is 3
+    }
+
     public function bookings()
     {
         return $this->hasMany(Booking::class);
