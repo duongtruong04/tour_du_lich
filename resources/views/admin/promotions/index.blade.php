@@ -70,7 +70,7 @@
                     </td>
                     <td class="px-6 py-4 text-right space-x-3">
                         <a href="{{ route('admin.promotions.edit', $promo->id) }}" class="text-blue-600 hover:text-blue-800" title="Sửa"><i class="fas fa-edit"></i></a>
-                        @if(Auth::user()->role_id == 1)
+                        @if(in_array(Auth::user()->role_id, [1, 3]))
                         <form action="{{ route('admin.promotions.destroy', $promo->id) }}" method="POST" class="inline">
                             @csrf @method('DELETE')
                             <button type="submit" class="text-red-500 hover:text-red-700" onclick="return confirm('Xóa mã này?')" title="Xóa"><i class="fas fa-trash"></i></button>

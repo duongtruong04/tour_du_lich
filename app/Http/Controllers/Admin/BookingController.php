@@ -19,10 +19,18 @@ class BookingController extends Controller
         $query = Booking::with(['user', 'departure.tour']);
         
         if ($request->search) {
-            $query->whereHas('user', function($q) use ($request) {
-                $q->where('full_name', 'like', '%' . $request->search . '%')
-                  ->orWhere('email', 'like', '%' . $request->search . '%');
-            })->orWhere('booking_code', 'like', '%' . $request->search . '%');
+            $keyword = $request->search;
+            $query->where(function ($q) use ($keyword) {
+                $q->where('booking_code', 'like', '%' . $keyword . '%')
+                  ->orWhereHas('user', function ($userQuery) use ($keyword) {
+                      $userQuery->where('full_name', 'like', '%' . $keyword . '%')
+                                ->orWhere('email', 'like', '%' . $keyword . '%')
+                                ->orWhere('phone', 'like', '%' . $keyword . '%');
+                  })
+                  ->orWhereHas('departure.tour', function ($tourQuery) use ($keyword) {
+                      $tourQuery->where('title', 'like', '%' . $keyword . '%');
+                  });
+            });
         }
 
         if ($request->status) {
@@ -139,7 +147,7 @@ class BookingController extends Controller
         return redirect()->route('admin.bookings.index')->with('success', 'Cập nhật đơn hàng thành công.');
     }
 
-    public function destroy(Booking $booking)
+    public function destroy(Request $request, Booking $booking)
     {
         // Revert seats if not cancelled previously
         if ($booking->status != 'Cancelled' && $booking->departure) {
@@ -152,6 +160,51 @@ class BookingController extends Controller
             $booking->passengers()->delete();
             $booking->delete();
         });
+
+        // Redirect back preserving search/filter/pagination state
+        $returnUrl = $request->input('return_url');
+        if ($returnUrl && str_starts_with($returnUrl, url('/'))) {
+            // Parse the return URL to check if the page is still valid
+            $parsed = parse_url($returnUrl);
+            if (isset($parsed['query'])) {
+                parse_str($parsed['query'], $queryParams);
+                if (isset($queryParams['page']) && (int)$queryParams['page'] > 1) {
+                    // Rebuild the query to check how many records remain on this page
+                    $checkQuery = Booking::with(['user', 'departure.tour']);
+                    if (!empty($queryParams['search'])) {
+                        $keyword = $queryParams['search'];
+                        $checkQuery->where(function ($q) use ($keyword) {
+                            $q->where('booking_code', 'like', '%' . $keyword . '%')
+                              ->orWhereHas('user', function ($uq) use ($keyword) {
+                                  $uq->where('full_name', 'like', '%' . $keyword . '%')
+                                     ->orWhere('email', 'like', '%' . $keyword . '%')
+                                     ->orWhere('phone', 'like', '%' . $keyword . '%');
+                              })
+                              ->orWhereHas('departure.tour', function ($tq) use ($keyword) {
+                                  $tq->where('title', 'like', '%' . $keyword . '%');
+                              });
+                        });
+                    }
+                    if (!empty($queryParams['status'])) {
+                        $checkQuery->where('status', $queryParams['status']);
+                    }
+                    if (!empty($queryParams['payment_status'])) {
+                        $checkQuery->where('payment_status', $queryParams['payment_status']);
+                    }
+                    $totalRecords = $checkQuery->count();
+                    $perPage = 10;
+                    $lastPage = max(1, (int)ceil($totalRecords / $perPage));
+                    $requestedPage = (int)$queryParams['page'];
+                    if ($requestedPage > $lastPage) {
+                        $queryParams['page'] = $lastPage;
+                        $newQuery = http_build_query($queryParams);
+                        $newUrl = strtok($returnUrl, '?') . '?' . $newQuery;
+                        return redirect()->to($newUrl)->with('success', 'Xóa đơn hàng thành công.');
+                    }
+                }
+            }
+            return redirect()->to($returnUrl)->with('success', 'Xóa đơn hàng thành công.');
+        }
 
         return redirect()->route('admin.bookings.index')->with('success', 'Xóa đơn hàng thành công.');
     }

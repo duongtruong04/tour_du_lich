@@ -6,7 +6,7 @@
 <div class="max-w-5xl mx-auto">
     <div class="flex items-center justify-between mb-8">
         <h1 class="text-3xl font-black text-slate-800 tracking-tight">Chỉnh sửa <span class="text-teal-600">Tour</span></h1>
-        <a href="{{ route('admin.tours.index') }}" class="text-slate-400 hover:text-teal-600 text-xs font-black uppercase tracking-widest transition-colors flex items-center">
+        <a href="{{ request('return_url', route('admin.tours.index')) }}" class="text-slate-400 hover:text-teal-600 text-xs font-black uppercase tracking-widest transition-colors flex items-center">
             <i class="fas fa-arrow-left mr-2 font-black"></i> Quay lại danh sách
         </a>
     </div>
@@ -14,6 +14,7 @@
     <form action="{{ route('admin.tours.update', $tour) }}" method="POST" enctype="multipart/form-data" class="space-y-8">
         @csrf
         @method('PUT')
+        <input type="hidden" name="return_url" value="{{ request('return_url', route('admin.tours.index')) }}">
         
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <!-- Left Side: Basic Info -->
@@ -222,7 +223,7 @@
                     <button type="submit" class="flex-1 py-5 bg-teal-600 hover:bg-teal-700 text-white rounded-[1.5rem] font-black text-xs uppercase tracking-[0.2em] shadow-xl shadow-teal-500/20 transition-all transform hover:-translate-y-1 active:scale-95">
                         Cập nhật Tour
                     </button>
-                    <button type="button" onclick="history.back()" class="px-10 py-5 bg-slate-100 text-slate-400 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-slate-200 transition-all">Hủy</button>
+                    <a href="{{ request('return_url', route('admin.tours.index')) }}" class="px-10 py-5 bg-slate-100 text-slate-400 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-slate-200 transition-all text-center">Hủy</a>
                 </div>
             </div>
         </div>
@@ -256,28 +257,70 @@
         }
     }
 
+    // Managed file list using DataTransfer
+    let managedFiles = new DataTransfer();
+
     function previewImages(input) {
         const gallery = document.getElementById('image-gallery');
-        const previewClass = 'new-preview';
-        
-        // Remove old previews
-        gallery.querySelectorAll('.' + previewClass).forEach(el => el.remove());
 
+        // Add new files to managed list
         if (input.files) {
             Array.from(input.files).forEach(file => {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const div = document.createElement('div');
-                    div.className = previewClass + ' aspect-square rounded-3xl bg-slate-50 overflow-hidden shadow-sm relative group ring-2 ring-teal-400';
-                    div.innerHTML = `
-                        <img src="${e.target.result}" class="w-full h-full object-cover">
-                        <div class="absolute inset-x-0 bottom-0 bg-teal-600 text-[10px] text-white font-black uppercase tracking-widest text-center py-1">Mới</div>
-                    `;
-                    gallery.prepend(div);
-                }
-                reader.readAsDataURL(file);
+                managedFiles.items.add(file);
             });
         }
+
+        // Sync input.files with managed list
+        input.files = managedFiles.files;
+
+        // Re-render all previews
+        renderNewPreviews(input);
+    }
+
+    function renderNewPreviews(input) {
+        const gallery = document.getElementById('image-gallery');
+        const previewClass = 'new-preview';
+
+        // Remove all existing previews
+        gallery.querySelectorAll('.' + previewClass).forEach(el => el.remove());
+
+        // Render each file in managedFiles
+        Array.from(managedFiles.files).forEach((file, index) => {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const div = document.createElement('div');
+                div.className = previewClass + ' aspect-square rounded-3xl bg-slate-50 overflow-hidden shadow-sm relative group ring-2 ring-teal-400';
+                div.setAttribute('data-file-index', index);
+                div.innerHTML = `
+                    <img src="${e.target.result}" class="w-full h-full object-cover">
+                    <div class="absolute inset-x-0 bottom-0 bg-teal-600 text-[10px] text-white font-black uppercase tracking-widest text-center py-1">Mới</div>
+                    <button type="button" onclick="removeNewImage(${index})" class="absolute top-2 right-2 w-8 h-8 bg-rose-500 text-white rounded-full flex items-center justify-center hover:bg-rose-600 transition-colors shadow-lg opacity-0 group-hover:opacity-100 z-10">
+                        <i class="fas fa-times text-xs"></i>
+                    </button>
+                `;
+                // Insert before the "add" button (last child of gallery)
+                const addButton = gallery.querySelector('label');
+                gallery.insertBefore(div, addButton);
+            }
+            reader.readAsDataURL(file);
+        });
+    }
+
+    function removeNewImage(fileIndex) {
+        const newDt = new DataTransfer();
+        Array.from(managedFiles.files).forEach((file, i) => {
+            if (i !== fileIndex) {
+                newDt.items.add(file);
+            }
+        });
+        managedFiles = newDt;
+
+        // Update the actual file input
+        const fileInput = document.querySelector('input[name="images[]"]');
+        fileInput.files = managedFiles.files;
+
+        // Re-render previews
+        renderNewPreviews(fileInput);
     }
 
     let departureIndex = {{ $tour->departures->count() }};

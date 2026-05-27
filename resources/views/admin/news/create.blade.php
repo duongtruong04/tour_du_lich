@@ -63,7 +63,7 @@
                         </div>
                         <input type="file" name="image" id="image-input" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer z-10">
                     </div>
-                    <p class="mt-4 text-[10px] text-slate-400 font-bold italic leading-relaxed text-center">Định dạng hỗ trợ: JPG, PNG, WEBP. Tối đa 2MB.</p>
+                    <p class="mt-4 text-[10px] text-slate-400 font-bold italic leading-relaxed text-center">Định dạng hỗ trợ: JPG, PNG, WEBP. Tối đa 10MB.</p>
                     @error('image')
                         <p class="mt-2 text-[10px] font-bold text-rose-500 uppercase tracking-widest px-2">{{ $message }}</p>
                     @enderror

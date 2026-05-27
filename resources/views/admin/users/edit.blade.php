@@ -10,7 +10,7 @@
                 <h4 class="text-lg font-black text-slate-800 tracking-tighter uppercase">{{ isset($user) ? 'Chỉnh sửa tài khoản' : 'Đăng ký thành viên mới' }}</h4>
                 <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Thông tin chi tiết và quyền truy cập hệ thống</p>
             </div>
-            <a href="{{ route('admin.users.index') }}" class="btn btn-outline !text-[9px] !py-3 rounded-xl border-slate-200 text-slate-400 hover:text-dark">
+            <a href="{{ request('return_url', route('admin.users.index')) }}" class="btn btn-outline !text-[9px] !py-3 rounded-xl border-slate-200 text-slate-400 hover:text-dark">
                 <i class="fas fa-arrow-left mr-2"></i> Quay lại
             </a>
         </div>
@@ -18,6 +18,7 @@
         <form action="{{ isset($user) ? route('admin.users.update', $user) : route('admin.users.store') }}" method="POST" enctype="multipart/form-data" class="p-10 space-y-10">
             @csrf
             @if(isset($user)) @method('PUT') @endif
+            <input type="hidden" name="return_url" value="{{ request('return_url', route('admin.users.index')) }}">
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
                 <!-- Avatar Upload -->
@@ -108,9 +109,9 @@
                 <button type="submit" class="btn btn-primary flex-1 py-5 rounded-2xl !text-[10px] group shadow-xl shadow-teal-500/30">
                     {{ isset($user) ? 'CẬP NHẬT THÔNG TIN' : 'TẠO TÀI KHOẢN MỚI' }} <i class="fas fa-save ml-3 group-hover:translate-y-[-2px] transition-transform"></i>
                 </button>
-                <button type="reset" class="btn btn-outline border-slate-200 text-slate-400 hover:text-dark px-10 rounded-2xl !text-[10px] py-5">
+                <a href="{{ request('return_url', route('admin.users.index')) }}" class="btn btn-outline border-slate-200 text-slate-400 hover:text-dark px-10 rounded-2xl !text-[10px] py-5 text-center">
                     Hủy bỏ
-                </button>
+                </a>
             </div>
         </form>
     </div>

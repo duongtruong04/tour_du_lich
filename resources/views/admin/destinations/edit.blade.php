@@ -6,7 +6,7 @@
 <div class="max-w-4xl mx-auto">
     <div class="flex items-center justify-between mb-8">
         <h1 class="text-3xl font-black text-slate-800 tracking-tight">Chỉnh sửa <span class="text-teal-600">Điểm đến</span></h1>
-        <a href="{{ route('admin.destinations.index') }}" class="text-slate-400 hover:text-teal-600 text-xs font-black uppercase tracking-widest transition-colors flex items-center">
+        <a href="{{ request('return_url', route('admin.destinations.index')) }}" class="text-slate-400 hover:text-teal-600 text-xs font-black uppercase tracking-widest transition-colors flex items-center">
             <i class="fas fa-arrow-left mr-2 font-black"></i> Quay lại danh sách
         </a>
     </div>
@@ -14,6 +14,7 @@
     <form action="{{ route('admin.destinations.update', $destination) }}" method="POST" enctype="multipart/form-data" class="space-y-8">
         @csrf
         @method('PUT')
+        <input type="hidden" name="return_url" value="{{ request('return_url', route('admin.destinations.index')) }}">
         
         <div class="bg-white p-8 rounded-[2.5rem] shadow-xl shadow-slate-200/50 border border-slate-100 flex flex-col md:flex-row gap-10">
             <!-- Image Upload Column -->
@@ -58,7 +59,7 @@
                     <button type="submit" class="flex-1 py-5 bg-teal-600 hover:bg-teal-700 text-white rounded-2xl font-black text-xs uppercase tracking-[0.2em] shadow-xl shadow-teal-500/20 transition-all transform hover:-translate-y-1 active:scale-95">
                         Cập nhật thông tin
                     </button>
-                    <button type="button" onclick="history.back()" class="px-10 py-5 bg-slate-100 text-slate-400 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-slate-200 transition-all">Hủy</button>
+                    <a href="{{ request('return_url', route('admin.destinations.index')) }}" class="px-10 py-5 bg-slate-100 text-slate-400 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-slate-200 transition-all text-center">Hủy</a>
                 </div>
             </div>
         </div>

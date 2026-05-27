@@ -76,7 +76,7 @@
                     </td>
                     <td class="p-5 text-right">
                         <div class="flex items-center justify-end gap-2">
-                            <a href="{{ route('admin.users.edit', $user) }}" class="w-8 h-8 flex items-center justify-center rounded-lg bg-slate-50 text-slate-500 hover:bg-primary hover:text-white transition-all shadow-sm">
+                            <a href="{{ route('admin.users.edit', $user) }}?return_url={{ urlencode(request()->fullUrl()) }}" class="w-8 h-8 flex items-center justify-center rounded-lg bg-slate-50 text-slate-500 hover:bg-primary hover:text-white transition-all shadow-sm">
                                 <i class="fas fa-edit text-[10px]"></i>
                             </a>
                             <form action="{{ route('admin.users.destroy', $user) }}" method="POST" onsubmit="return confirm('Xác nhận xóa người dùng này?')" class="inline">
@@ -97,7 +97,7 @@
     <!-- Pagination -->
     @if($users->hasPages())
     <div class="p-8 border-t border-slate-50">
-        {{ $users->links() }}
+        {{ $users->appends(request()->query())->links() }}
     </div>
     @endif
 </div>

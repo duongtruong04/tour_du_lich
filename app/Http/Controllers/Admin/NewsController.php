@@ -53,7 +53,7 @@ class NewsController extends Controller
             'title' => 'required',
             'category_id' => 'required',
             'content' => 'required',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:10240',
         ]);
 
         $data = [
@@ -87,7 +87,7 @@ class NewsController extends Controller
             'title' => 'required',
             'category_id' => 'required',
             'content' => 'required',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:10240',
         ]);
 
         $data = [

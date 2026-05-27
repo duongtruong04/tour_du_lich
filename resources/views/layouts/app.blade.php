@@ -230,13 +230,16 @@
                         "{{ $settings['site_title'] ?? 'Cung cấp những hành trình tuyệt vời, mở ra những trải nghiệm vô tận cho bạn và gia đình.' }}"
                     </p>
                     <div class="flex gap-4">
-                        <a href="#"
+                        <a href="{{ $settings['facebook_url'] ?? '#' }}"
+                            target="_blank" rel="noopener noreferrer" aria-label="Facebook TourTravel"
                             class="w-10 h-10 bg-white/5 rounded-xl flex items-center justify-center hover:bg-primary transition-all"><i
                                 class="fab fa-facebook-f"></i></a>
-                        <a href="#"
+                        <a href="{{ $settings['instagram_url'] ?? '#' }}"
+                            target="_blank" rel="noopener noreferrer" aria-label="Instagram TourTravel"
                             class="w-10 h-10 bg-white/5 rounded-xl flex items-center justify-center hover:bg-primary transition-all"><i
                                 class="fab fa-instagram"></i></a>
-                        <a href="#"
+                        <a href="{{ $settings['twitter_url'] ?? '#' }}"
+                            target="_blank" rel="noopener noreferrer" aria-label="Twitter TourTravel"
                             class="w-10 h-10 bg-white/5 rounded-xl flex items-center justify-center hover:bg-primary transition-all"><i
                                 class="fab fa-twitter"></i></a>
                     </div>

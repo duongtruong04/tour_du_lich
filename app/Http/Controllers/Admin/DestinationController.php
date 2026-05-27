@@ -49,7 +49,7 @@ class DestinationController extends Controller
         $request->validate([
             'name' => 'required',
             'location' => 'required',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:10240',
         ]);
 
         $data = $request->all();
@@ -74,7 +74,7 @@ class DestinationController extends Controller
         $request->validate([
             'name' => 'required',
             'location' => 'required',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:10240',
         ]);
 
         $data = $request->all();
@@ -89,6 +89,11 @@ class DestinationController extends Controller
         }
 
         $destination->update($data);
+
+        $returnUrl = $request->input('return_url');
+        if ($returnUrl && str_starts_with($returnUrl, url('/'))) {
+            return redirect()->to($returnUrl)->with('success', 'Cập nhật điểm đến thành công.');
+        }
 
         return redirect()->route('admin.destinations.index')->with('success', 'Cập nhật điểm đến thành công.');
     }

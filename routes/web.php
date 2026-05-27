@@ -99,14 +99,16 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('payments/{payment}', [\App\Http\Controllers\Admin\PaymentController::class, 'show'])->name('payments.show');
     Route::get('chats', [\App\Http\Controllers\Admin\ChatController::class, 'index'])->name('chats.index');
 
+    // Destroy routes accessible by both Admin & Staff (role 1, 3)
+    Route::delete('tours/{tour}', [TourController::class, 'destroy'])->name('tours.destroy');
+    Route::delete('destinations/{destination}', [DestinationController::class, 'destroy'])->name('destinations.destroy');
+    Route::delete('news/{news}', [NewsController::class, 'destroy'])->name('news.destroy');
+    Route::delete('promotions/{promotion}', [PromotionController::class, 'destroy'])->name('promotions.destroy');
+
     // Admin only delete & configuration actions
     Route::middleware('superadmin')->group(function () {
-        Route::delete('tours/{tour}', [TourController::class, 'destroy'])->name('tours.destroy');
         Route::delete('bookings/{booking}', [BookingController::class, 'destroy'])->name('bookings.destroy');
-        Route::delete('destinations/{destination}', [DestinationController::class, 'destroy'])->name('destinations.destroy');
-        Route::delete('news/{news}', [NewsController::class, 'destroy'])->name('news.destroy');
         Route::delete('news_categories/{news_category}', [NewsCategoryController::class, 'destroy'])->name('news_categories.destroy');
-        Route::delete('promotions/{promotion}', [PromotionController::class, 'destroy'])->name('promotions.destroy');
         Route::delete('reviews/{review}', [ReviewController::class, 'destroy'])->name('reviews.destroy');
         Route::delete('chats/{chat}', [\App\Http\Controllers\Admin\ChatController::class, 'destroy'])->name('chats.destroy');
         

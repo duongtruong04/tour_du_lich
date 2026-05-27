@@ -95,6 +95,11 @@ class UserController extends Controller
         $data['status'] = $request->status ?? 1;
         $user->update($data);
 
+        $returnUrl = $request->input('return_url');
+        if ($returnUrl && str_starts_with($returnUrl, url('/'))) {
+            return redirect()->to($returnUrl)->with('success', 'Cập nhật người dùng thành công.');
+        }
+
         return redirect()->route('admin.users.index')->with('success', 'Cập nhật người dùng thành công.');
     }
 

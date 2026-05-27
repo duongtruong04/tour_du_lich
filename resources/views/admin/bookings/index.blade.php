@@ -8,7 +8,7 @@
         <form action="{{ route('admin.bookings.index') }}" method="GET" class="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div class="relative">
                 <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
-                <input type="text" name="search" value="{{ request('search') }}" placeholder="Tìm mã, tên khách..." 
+                <input type="text" name="search" value="{{ request('search') }}" placeholder="Tìm mã đơn, khách hàng, tên tour..." 
                     class="w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm">
             </div>
             <div>
@@ -94,6 +94,7 @@
                         @if(Auth::user()->role_id == 1)
                         <form action="{{ route('admin.bookings.destroy', $booking->id) }}" method="POST" class="inline">
                             @csrf @method('DELETE')
+                            <input type="hidden" name="return_url" value="{{ request()->fullUrl() }}">
                             <button type="submit" class="text-red-500 hover:text-red-700" onclick="return confirm('Xóa đơn hàng này?')" title="Xóa"><i class="fas fa-trash text-lg"></i></button>
                         </form>
                         @endif

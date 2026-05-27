@@ -62,10 +62,10 @@
                     <td class="px-8 py-4 text-slate-500 font-medium max-w-xs truncate">{{ $destination->description }}</td>
                     <td class="px-8 py-4 text-right">
                         <div class="flex justify-end gap-2">
-                            <a href="{{ route('admin.destinations.edit', $destination) }}" class="p-2 text-teal-600 hover:bg-teal-50 rounded-lg transition-colors" title="Chỉnh sửa">
+                            <a href="{{ route('admin.destinations.edit', $destination) }}?return_url={{ urlencode(request()->fullUrl()) }}" class="p-2 text-teal-600 hover:bg-teal-50 rounded-lg transition-colors" title="Chỉnh sửa">
                                 <i class="fas fa-edit"></i>
                             </a>
-                            @if(Auth::user()->role_id == 1)
+                            @if(in_array(Auth::user()->role_id, [1, 3]))
                             <form action="{{ route('admin.destinations.destroy', $destination) }}" method="POST" onsubmit="return confirm('Xác nhận xóa điểm đến này?')" class="inline">
                                 @csrf
                                 @method('DELETE')
@@ -87,7 +87,7 @@
     </div>
     
     <div class="p-8 border-t border-gray-50 bg-gray-50/30">
-        {{ $destinations->links() }}
+        {{ $destinations->appends(request()->query())->links() }}
     </div>
 </div>
 @endsection

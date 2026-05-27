@@ -174,12 +174,18 @@ class TourController extends Controller
 
         // Handle adding new images
         if ($request->hasFile('images')) {
+            $isFirst = true;
             foreach ($request->file('images') as $image) {
                 $path = $image->store('tours', 'public');
                 $tour->images()->create([
                     'image_path' => $path,
-                    'is_primary' => false,
+                    'is_primary' => $isFirst,
                 ]);
+                if ($isFirst) {
+                    // Demote all other images to non-primary
+                    $tour->images()->where('image_path', '!=', $path)->update(['is_primary' => false]);
+                    $isFirst = false;
+                }
             }
         }
 
@@ -227,6 +233,11 @@ class TourController extends Controller
         $message = 'Cập nhật tour thành công.';
         if ($skippedCount > 0) {
             $message .= " Lưu ý: {$skippedCount} ngày khởi hành đã có khách đặt nên không thể xóa.";
+        }
+
+        $returnUrl = $request->input('return_url');
+        if ($returnUrl && str_starts_with($returnUrl, url('/'))) {
+            return redirect()->to($returnUrl)->with('success', $message);
         }
 
         return redirect()->route('admin.tours.index')->with('success', $message);

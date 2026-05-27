@@ -71,7 +71,7 @@
                             <a href="{{ route('admin.news.edit', $item) }}" class="p-2 text-teal-600 hover:bg-teal-50 rounded-lg transition-colors" title="Chỉnh sửa">
                                 <i class="fas fa-edit"></i>
                             </a>
-                            @if(Auth::user()->role_id == 1)
+                            @if(in_array(Auth::user()->role_id, [1, 3]))
                             <form action="{{ route('admin.news.destroy', $item) }}" method="POST" onsubmit="return confirm('Xác nhận xóa bài viết này?')" class="inline">
                                 @csrf
                                 @method('DELETE')
