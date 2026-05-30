@@ -66,11 +66,11 @@ Route::post('logout', [LoginController::class, 'logout'])->name('logout');
 Route::get('register', [RegisterController::class, 'showRegistrationForm'])->name('register');
 Route::post('register', [RegisterController::class, 'register']);
 
-// Password Reset Routes
-Route::get('forgot-password', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
-Route::post('forgot-password', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
-Route::get('reset-password/{token}', [ForgotPasswordController::class, 'showResetForm'])->name('password.reset');
-Route::post('reset-password', [ForgotPasswordController::class, 'reset'])->name('password.update');
+// Password Reset Routes (OTP-based via Resend API)
+Route::get('forgot-password', [ForgotPasswordController::class, 'showForgotForm'])->name('password.request');
+Route::post('forgot-password', [ForgotPasswordController::class, 'sendResetCode'])->name('password.email');
+Route::get('reset-password', [ForgotPasswordController::class, 'showResetForm'])->name('password.reset.form');
+Route::post('reset-password', [ForgotPasswordController::class, 'resetPassword'])->name('password.update');
 
 // AI Chatbot Route
 Route::post('chat/ask', [\App\Http\Controllers\Customer\CustomerChatgptController::class, 'ask'])->name('public.chat.ask');

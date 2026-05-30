@@ -131,7 +131,7 @@
                                     <input type="checkbox" class="w-4 h-4 rounded border-teal-200 text-teal-600 focus:ring-teal-500 cursor-pointer">
                                     <span class="ml-2 text-[10px] font-black text-teal-800 uppercase tracking-widest group-hover:text-teal-600 transition-colors">Ghi nhớ</span>
                                 </label>
-                                <a href="{{ route('home') }}" class="text-[10px] font-black text-teal-600 hover:text-teal-800 uppercase tracking-widest">← Về trang chủ</a>
+                                <a href="{{ route('password.request') }}" class="text-[10px] font-black text-teal-600 hover:text-teal-800 uppercase tracking-widest">Quên mật khẩu?</a>
                             </div>
 
                             <button type="submit" class="btn-auth-admin">

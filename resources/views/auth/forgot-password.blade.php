@@ -6,7 +6,10 @@
 <style>
     .auth-section {
         position: relative;
-        padding: 40px 0;
+        padding: 20px 0;
+        min-height: calc(100vh - 80px);
+        display: flex;
+        align-items: center;
         overflow: visible;
     }
     .auth-bg-blob {
@@ -44,7 +47,7 @@
     }
     .auth-input {
         width: 100%;
-        padding: 1rem 1rem 1rem 3.5rem;
+        padding: 0.85rem 1rem 0.85rem 3rem;
         background: #f8fafc;
         border: 2px solid #f1f5f9;
         border-radius: 1rem;
@@ -71,10 +74,63 @@
         letter-spacing: 0.05em;
         box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.3);
         transition: all 0.3s;
+        border: none;
+        cursor: pointer;
+        font-size: 0.875rem;
     }
     .btn-auth-primary:hover {
         transform: translateY(-2px);
         box-shadow: 0 20px 25px -5px rgba(16, 185, 129, 0.4);
+    }
+    .btn-auth-primary:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+        transform: none;
+    }
+    .status-message {
+        background: linear-gradient(135deg, #f0fdf4, #ecfdf5);
+        border: 1px solid #bbf7d0;
+        border-radius: 1rem;
+        padding: 1rem 1.25rem;
+        margin-bottom: 1.5rem;
+    }
+    .status-message p {
+        color: #166534;
+        font-size: 0.8rem;
+        font-weight: 600;
+        line-height: 1.6;
+        margin: 0;
+    }
+    .error-message {
+        background: #fef2f2;
+        border: 1px solid #fecaca;
+        border-radius: 1rem;
+        padding: 0.75rem 1.25rem;
+        margin-bottom: 1.5rem;
+    }
+    .error-message p {
+        color: #991b1b;
+        font-size: 0.8rem;
+        font-weight: 600;
+        margin: 0;
+    }
+    .shield-icon-wrapper {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .shield-pulse {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        border-radius: inherit;
+        background: rgba(16, 185, 129, 0.15);
+        animation: shieldPulse 2s ease-in-out infinite;
+    }
+    @keyframes shieldPulse {
+        0%, 100% { transform: scale(1); opacity: 0.3; }
+        50% { transform: scale(1.15); opacity: 0; }
     }
 </style>
 @endsection
@@ -87,68 +143,63 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-center">
             <div class="w-full max-w-lg">
-                <div class="auth-card p-8 sm:p-12">
+                <div class="auth-card p-6 sm:p-10">
                     <!-- Header -->
-                    <div class="text-center mb-10">
-                        <div class="inline-flex items-center justify-center w-16 h-16 bg-emerald-50 text-primary rounded-2xl mb-6">
-                            <i class="fas fa-key text-2xl"></i>
+                    <div class="text-center mb-8">
+                        <div class="shield-icon-wrapper w-16 h-16 bg-emerald-50 text-primary rounded-2xl mb-5 mx-auto">
+                            <div class="shield-pulse rounded-2xl"></div>
+                            <i class="fas fa-key text-2xl relative z-10"></i>
                         </div>
-                        <h1 class="text-3xl font-black text-slate-900 tracking-tight mb-2">Quên mật khẩu?</h1>
-                        <p class="text-slate-500 font-medium">Nhập email đăng ký của bạn để nhận liên kết đặt lại mật khẩu.</p>
+                        <h1 class="text-2xl font-black text-slate-900 tracking-tight mb-2">Quên mật khẩu?</h1>
+                        <p class="text-slate-500 font-medium text-sm leading-relaxed">
+                            Nhập email đăng ký của bạn. Chúng tôi sẽ gửi mã xác thực 6 số để đặt lại mật khẩu.
+                        </p>
                     </div>
 
-                    @if(session('success'))
-                    <div class="bg-emerald-50 border border-emerald-100 text-emerald-700 px-6 py-4 rounded-2xl mb-6">
+                    {{-- Thông báo chung (luôn hiển thị cùng 1 message dù email tồn tại hay không) --}}
+                    @if(session('status'))
+                    <div class="status-message">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-check-circle text-emerald-500 mt-0.5"></i>
+                            <p>{{ session('status') }}</p>
+                        </div>
+                    </div>
+                    @endif
+
+                    {{-- Validation errors --}}
+                    @if($errors->any())
+                    <div class="error-message">
                         <div class="flex items-center gap-3">
-                            <i class="fas fa-check-circle text-lg"></i>
-                            <span class="text-sm font-bold">{{ session('success') }}</span>
+                            <i class="fas fa-exclamation-triangle text-rose-500"></i>
+                            <p>{{ $errors->first() }}</p>
                         </div>
-                        
-                        <!-- Fallback link in case SMTP isn't running -->
-                        @if(session('debug_reset_url'))
-                        <div class="mt-4 p-4 bg-amber-50 border border-amber-200 rounded-xl text-amber-800 text-xs">
-                            <p class="font-black uppercase tracking-wider flex items-center gap-2 text-amber-700 mb-2">
-                                <i class="fas fa-exclamation-triangle"></i> Cấu hình Mail Server chưa chạy
-                            </p>
-                            <p class="mb-3 leading-relaxed">Hệ thống không thể gửi email thực tế đến địa chỉ của bạn. Để kiểm tra và thử nghiệm tính năng nhanh chóng, vui lòng bấm trực tiếp vào liên kết bên dưới:</p>
-                            <a href="{{ session('debug_reset_url') }}" class="inline-block px-4 py-2 bg-amber-600 text-white rounded-lg font-bold hover:bg-amber-700 transition-colors">
-                                <i class="fas fa-magic mr-1"></i> Đặt lại mật khẩu ngay
-                            </a>
-                        </div>
-                        @endif
                     </div>
                     @endif
 
-                    @if($errors->has('email'))
-                    <div class="bg-rose-50 border border-rose-100 text-rose-700 px-4 py-3 rounded-xl mb-6 flex items-center gap-3">
-                        <i class="fas fa-exclamation-triangle"></i>
-                        <span class="text-sm font-bold">{{ $errors->first('email') }}</span>
-                    </div>
-                    @endif
-
-                    <form action="{{ route('password.email') }}" method="POST" id="reset-request-form">
+                    <form action="{{ route('password.email') }}" method="POST" id="forgot-form">
                         @csrf
-                        <div class="space-y-6">
+                        <div class="space-y-5">
                             <!-- Email -->
                             <div class="auth-input-group">
                                 <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">Địa chỉ Email đăng ký</label>
-                                <input type="email" name="email" id="email" value="{{ old('email') }}" 
-                                       class="auth-input {{ $errors->has('email') ? 'border-rose-200' : '' }}" 
+                                <input type="email" name="email" id="email" value="{{ old('email') }}"
+                                       class="auth-input {{ $errors->has('email') ? 'border-rose-200' : '' }}"
                                        placeholder="example@email.com" required autocomplete="email">
                                 <i class="fas fa-envelope auth-input-icon"></i>
                             </div>
 
                             <!-- Submit -->
                             <button type="submit" class="btn-auth-primary" id="submit-btn">
-                                <span id="btn-text">Gửi liên kết đặt lại</span>
+                                <span id="btn-text"><i class="fas fa-paper-plane mr-2"></i>Gửi mã đặt lại mật khẩu</span>
                                 <span id="btn-load" style="display:none;"><i class="fas fa-circle-notch fa-spin mr-2"></i>Đang gửi yêu cầu...</span>
                             </button>
                         </div>
                     </form>
 
                     <div class="text-center mt-8">
-                        <a href="{{ route('login') }}" class="text-xs font-black text-primary uppercase tracking-widest hover:underline">
-                            ← Quay lại đăng nhập
+                        <a href="{{ route('login') }}" class="text-xs font-black text-primary uppercase tracking-widest hover:underline inline-flex items-center gap-2">
+                            <i class="fas fa-arrow-left text-[9px]"></i>
+                            Quay lại đăng nhập
                         </a>
                     </div>
                 </div>
@@ -160,7 +211,7 @@
 
 @section('scripts')
 <script>
-    document.getElementById('reset-request-form').addEventListener('submit', function() {
+    document.getElementById('forgot-form').addEventListener('submit', function() {
         document.getElementById('btn-text').style.display = 'none';
         document.getElementById('btn-load').style.display = 'inline';
         document.getElementById('submit-btn').disabled = true;
