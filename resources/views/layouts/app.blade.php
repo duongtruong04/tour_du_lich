@@ -150,6 +150,10 @@
                         class="flex items-center gap-4 text-sm font-black text-slate-700 uppercase tracking-widest hover:text-primary transition-all {{ request()->routeIs('home') ? 'text-primary' : '' }}">
                         <i class="fas fa-home w-5 text-center text-lg"></i> Trang chủ
                     </a>
+                    <a href="{{ route('public.destinations.index') }}"
+                        class="flex items-center gap-4 text-sm font-black text-slate-700 uppercase tracking-widest hover:text-primary transition-all {{ request()->routeIs('public.destinations.*') ? 'text-primary' : '' }}">
+                        <i class="fas fa-map-marker-alt w-5 text-center text-lg"></i> Điểm đến
+                    </a>
                     <a href="{{ route('public.tours.index') }}"
                         class="flex items-center gap-4 text-sm font-black text-slate-700 uppercase tracking-widest hover:text-primary transition-all {{ request()->routeIs('public.tours.*') ? 'text-primary' : '' }}">
                         <i class="fas fa-route w-5 text-center text-lg"></i> Tour du lịch
