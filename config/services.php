@@ -32,7 +32,9 @@ return [
     ],
 
     'openrouter' => [
-       'key' => env('OPENROUTER_API_KEY'),
+        'key' => env('OPENROUTER_API_KEY'),
+        'base_url' => env('OPENROUTER_BASE_URL', 'https://openrouter.ai/api/v1'),
+        'model' => env('OPENROUTER_MODEL', 'openrouter/auto'),
     ],
 
     'resend' => [

@@ -11,7 +11,11 @@ class TicketController extends Controller
 {
     public function showTickets(Booking $booking)
     {
-        if ($booking->user_id !== Auth::id()) {
+        $user = Auth::user();
+
+        // Admin (role_id=1) và Nhân viên (role_id=3) được xem tất cả vé
+        // Khách hàng chỉ xem được vé của chính mình
+        if ((int) $booking->user_id != (int) $user->id && !in_array((int) $user->role_id, [1, 3])) {
             abort(403, 'Unauthorized access to tickets.');
         }
 

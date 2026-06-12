@@ -335,10 +335,17 @@
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json'
                     },
                     body: JSON.stringify({ question: question })
                 });
+
+                const contentType = response.headers.get('content-type') || '';
+                if (!contentType.includes('application/json')) {
+                    this.messages.push({ sender: 'ai', text: 'Máy chủ đang gặp sự cố, vui lòng thử lại sau.' });
+                    return;
+                }
 
                 const data = await response.json();
                 if (response.ok) {
