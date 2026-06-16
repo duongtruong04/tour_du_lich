@@ -411,3 +411,60 @@ img {
 .tracking-widest { letter-spacing: 0.1em; }
 .tracking-tight { letter-spacing: -0.025em; }
 .tracking-tighter { letter-spacing: -0.05em; }
+
+/* ============================================
+   Public UI Enhancements (không ảnh hưởng admin/chatbot)
+   ============================================ */
+
+/* Smooth scrolling toàn trang */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Fade-in nhẹ khi trang load — chỉ áp dụng cho main content public */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+body > main {
+    animation: fadeInUp 0.5s ease-out;
+}
+
+/* Hover lift nhẹ cho các card tour/điểm đến/tin tức trong public pages */
+body > main .group:hover,
+body > main [class*="rounded-2xl"][class*="shadow"]:hover,
+body > main [class*="rounded-3xl"][class*="shadow"]:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 24px -8px rgba(0, 0, 0, 0.12);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+body > main .group,
+body > main [class*="rounded-2xl"][class*="shadow"],
+body > main [class*="rounded-3xl"][class*="shadow"] {
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+/* Hover mượt hơn cho các nút bấm public */
+body > main .btn,
+body > main a[class*="btn"] {
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Ảnh trong card: zoom nhẹ khi hover */
+body > main .group:hover img,
+body > main [class*="overflow-hidden"]:hover > img {
+    transform: scale(1.03);
+    transition: transform 0.4s ease;
+}
+
+body > main img {
+    transition: transform 0.4s ease;
+}

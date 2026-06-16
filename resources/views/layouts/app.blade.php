@@ -103,7 +103,7 @@
                                     class="flex items-center gap-3 px-4 py-3 text-xs font-bold text-slate-600 hover:bg-slate-50 hover:text-primary transition-all">
                                     <i class="fas fa-history text-slate-400"></i> Lịch sử đặt tour
                                 </a>
-                                @if(Auth::user()->isAdmin())
+                                @if(Auth::user()->isAdmin() || Auth::user()->isStaff())
                                     <a href="{{ route('admin.dashboard') }}"
                                         class="flex items-center gap-3 px-4 py-3 text-xs font-bold text-slate-600 hover:bg-slate-50 hover:text-primary transition-all">
                                         <i class="fas fa-th-large text-slate-400"></i> Trang quản trị
@@ -184,7 +184,7 @@
                                 class="flex items-center gap-4 text-sm font-black text-slate-700 uppercase tracking-widest hover:text-primary transition-all">
                                 <i class="fas fa-history text-primary"></i> Tra cứu đơn hàng
                             </a>
-                            @if(Auth::user()->isAdmin())
+                            @if(Auth::user()->isAdmin() || Auth::user()->isStaff())
                                 <a href="{{ route('admin.dashboard') }}"
                                     class="flex items-center gap-4 text-sm font-black text-slate-700 uppercase tracking-widest hover:text-primary transition-all">
                                     <i class="fas fa-th-large w-5 text-center text-lg text-slate-400"></i> Trang quản trị
@@ -444,7 +444,7 @@
                                 ? 'bg-primary text-white rounded-t-2xl rounded-bl-2xl shadow-md shadow-emerald-500/10' 
                                 : 'bg-white text-slate-800 rounded-t-2xl rounded-br-2xl border border-slate-100 shadow-sm'"
                             class="max-w-[85%] px-4 py-3 text-xs font-medium leading-relaxed whitespace-pre-wrap"
-                            x-text="message.text">
+                            x-html="window.parseMarkdown(message.text)">
                         </div>
                     </div>
                 </template>
@@ -474,6 +474,50 @@
             </form>
         </div>
     </div>
+
+    <!-- Chatbot Markdown Parser -->
+    <script>
+        window.parseMarkdown = function(text) {
+            if (!text) return '';
+
+            var safe = String(text)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+
+            safe = safe.replace(/\[([^\]]+)\]\(([^)]+)\)/g, function(match, label, url) {
+                try {
+                    var decodedUrl = url
+                        .replace(/&amp;/g, '&')
+                        .replace(/&quot;/g, '"')
+                        .replace(/&#039;/g, "'");
+
+                    var parsedUrl = new URL(decodedUrl);
+
+                    if (parsedUrl.protocol !== 'http:' && parsedUrl.protocol !== 'https:') {
+                        return label;
+                    }
+
+                    var safeHref = parsedUrl.href
+                        .replace(/&/g, '&amp;')
+                        .replace(/"/g, '&quot;')
+                        .replace(/</g, '&lt;')
+                        .replace(/>/g, '&gt;');
+
+                    return '<a href="' + safeHref + '" target="_blank" rel="noopener noreferrer" class="text-primary underline font-bold hover:text-emerald-700 transition-colors">' + label + '</a>';
+                } catch (e) {
+                    return label;
+                }
+            });
+
+            safe = safe.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+            safe = safe.replace(/\n/g, '<br>');
+
+            return safe;
+        };
+    </script>
 
     <!-- Scripts -->
     @yield('scripts')

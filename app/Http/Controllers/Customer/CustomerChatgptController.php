@@ -47,8 +47,10 @@ class CustomerChatgptController extends Controller
                 }
 
                 $destinations = $tour->destinations->pluck('name')->implode(', ');
+                $tourUrl = route('public.tours.show', $tour->slug);
 
                 $toursData[] = "- Tên Tour: {$tour->title} (#T" . str_pad($tour->id, 4, '0', STR_PAD_LEFT) . ")
+  + URL chi tiết: {$tourUrl}
   + Thời gian: {$tour->duration} (Phương tiện: {$tour->transportation})
   + Điểm đến: {$destinations}
   + Giá gốc: " . number_format($tour->base_price) . "đ
@@ -69,22 +71,29 @@ class CustomerChatgptController extends Controller
             $promoContext = implode("\n", $promoData);
 
             // 4. Xây dựng Prompt
-            $systemPrompt = "Bạn là trợ lý ảo AI chăm sóc khách hàng của công ty du lịch {$siteName}.
+            $systemPrompt = "Bạn là chuyên viên tư vấn tour du lịch chuyên nghiệp của công ty {$siteName}. Nhiệm vụ của bạn là tư vấn tour dựa trên dữ liệu tour thật được hệ thống cung cấp.
+
 Thông tin liên hệ của công ty:
 - Hotline: {$hotline}
 - Email: {$email}
 - Địa chỉ: {$address}
 - Tài khoản thanh toán/ngân hàng: {$bankInfo}
 
-Hãy sử dụng thông tin danh sách các tour du lịch và chương trình khuyến mãi dưới đây để trả lời câu hỏi của khách hàng một cách thân thiện, nhiệt tình, chuyên nghiệp, ngắn gọn (sử dụng ngôn ngữ tự nhiên, tiếng Việt).
-Lưu ý quan trọng:
-1. Chỉ trả lời dựa vào các thông tin có trong danh sách. Nếu khách hỏi thông tin/tour không có, hãy lịch sự phản hồi là không có thông tin hoặc gợi ý họ gọi hotline {$hotline} để được tư vấn thêm.
-2. Trả lời ngắn gọn, trực diện, không dài dòng lê thê. Không sử dụng định dạng Markdown quá phức tạp, giữ câu trả lời sạch sẽ.
+Quy tắc bắt buộc:
+- Luôn trả lời bằng tiếng Việt, giọng thân thiện, rõ ràng.
+- Chỉ sử dụng dữ liệu tour có trong phần 'Dữ liệu tour hiện có'.
+- Không tự bịa tên tour, URL, giá, lịch trình, khuyến mãi hoặc dịch vụ.
+- Nếu dữ liệu thiếu, hãy nói rõ hệ thống chưa có thông tin đó.
+- Khi nhắc đến bất kỳ tour nào, bắt buộc chèn link Markdown dạng [Tên tour](URL chi tiết) bằng đúng URL được cung cấp trong trường 'URL chi tiết' của tour đó.
+- Nếu khách hàng hỏi một tour cụ thể và trong dữ liệu có tour phù hợp rõ ràng, hãy ưu tiên trả lời tập trung vào tour đó và đưa đúng 1 link chi tiết tour.
+- Nếu khách hàng hỏi chung chung, có thể đề xuất tối đa 3 tour phù hợp nhất, mỗi tour có link chi tiết nếu có.
+- Nếu không tìm thấy tour phù hợp, không được bịa tour. Hãy nói chưa tìm thấy tour phù hợp và hỏi thêm nhu cầu hoặc gợi ý gọi hotline {$hotline}.
+- Chỉ dùng Markdown đơn giản: **in đậm**, xuống dòng, và link Markdown. Không dùng HTML.
 
-DANH SÁCH TOUR DU LỊCH ĐANG HOẠT ĐỘNG:
+Dữ liệu tour hiện có:
 {$toursContext}
 
-DANH SÁCH MÃ GIẢM GIÁ:
+Mã giảm giá đang hoạt động:
 {$promoContext}";
 
             // 5. Lấy API key theo thứ tự ưu tiên: DB settings > config (không dùng env() trực tiếp)
